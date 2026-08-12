@@ -1,0 +1,11 @@
+{
+  "name": "skill-feedback",
+  "description": "Review recent Claude Code sessions that used a specific agent or skill and file per-session feedback as GitHub issues, with duplicate detection and mandatory redaction.",
+  "version": "2.3.0",
+  "author": {
+    "name": "Ingo Claro"
+  },
+  "homepage": "https://github.com/ingoclaro/skill-feedback",
+  "repository": "https://github.com/ingoclaro/skill-feedback",
+  "license": "MIT"
+}
