@@ -1,0 +1,96 @@
+{
+  "skill_name": "defer-issues",
+  "executor_model": "claude-sonnet-5",
+  "notes": "Runs are headless `claude -p` sessions inside a fresh fixture copy (rules auto-load by cwd, so Agent-tool subagents cannot be used); the runner passes --add-dir for the installed skill so reference files are readable. Configs: with_skill = the shipped hybrid skill + fixtures-hybrid; without_skill disables skills + fixtures. Both fixture sets come from one setup_fixtures.sh --mechanism {rules,mixed} and contain identical sources — only the seeded issues' anchor differs (the record is issues/issue-<id>.md in every set; a rule points at it and never holds the issue body). Each eval's `expected_mechanism` is the mechanism the hybrid skill should choose for it, and is what grade_runs.py grades a with_skill run against (without_skill grades as rules). Seeded fixture issue ids use the reserved `fx-` prefix. Writes under .claude/ are permission-blocked headlessly; rule-mechanism assertions accept the degraded path (rule content in the final report) — the record write itself is ordinary and is not excused.",
+  "evals": [
+    {
+      "id": 1,
+      "name": "record-local",
+      "fixture": "record-local",
+      "expected_mechanism": "comments",
+      "prompt": "I just noticed the retry loop is copy-pasted in both functions in src/foo.py. We should extract a shared retry helper eventually, but don't refactor it now — just note this for later so it gets picked up next time someone works on that file.",
+      "expected_output": "A pending-issue record scoped to src/foo.py: an issues/issue-local-1.md record plus a TODO marker in src/foo.py (rules arms: the same record, anchored by a .claude/rules/issue-local-1.md pointer — or, if that protected write is denied, the rule content in the final report), and an ISSUES.md index line. No refactor performed.",
+      "assertions": [
+        "source_intact: no code changes under src/ (comment lines, including the mechanism's TODO marker, are allowed; nothing else)",
+        "record_produced: an issues/issue-*.md record about the retry duplication that resurfaces on src/foo.py (anchored by a marker, or by a rule whose paths match it) OR appears in the final report",
+        "scoped_tightly: the mechanism surfaces on src/foo.py and NOT on the unrelated src/bar.py (no catch-all glob, no stray markers)",
+        "index_line_produced: ISSUES.md exists with a line linking the record OR the index line appears in the final report",
+        "local_naming: record file (or reported filename) follows issue-local-<n>.md",
+        "mechanism_choice (with_skill only): a file-specific issue is anchored by a TODO comment, not by a rule"
+      ]
+    },
+    {
+      "id": 2,
+      "name": "surface-resolve",
+      "fixture": "surface-resolve",
+      "expected_mechanism": "comments",
+      "prompt": "Add a count_rows(rows) function to src/report.py that returns the number of rows, and commit the change.",
+      "expected_output": "count_rows added and committed. The seeded pending issue fx-1 (KeyError on missing 'total') is either fixed in a separate commit (with its record deleted and index line removed) or explicitly mentioned as pending in the final message — never silently ignored.",
+      "assertions": [
+        "task_done: count_rows exists in src/report.py and is committed",
+        "not_silently_ignored: the pending issue is fixed OR mentioned in the final message",
+        "separate_commit_if_fixed: if the .get() fix was applied, it is in a different commit than count_rows",
+        "task_commit_uncontaminated: the count_rows commit touches neither the fix nor the issue records (record files, markers, index)",
+        "closeout_if_fixed: if fixed, the fx-1 record, every fx-1 marker, and its ISSUES.md line are all removed"
+      ]
+    },
+    {
+      "id": 3,
+      "name": "accumulation-cluster",
+      "fixture": "accumulation-cluster",
+      "expected_mechanism": "comments",
+      "prompt": "Add support for an optional per-line 'discount' field (a fraction like 0.1) in src/billing/invoice.py so line_total applies it when present, and commit the change.",
+      "expected_output": "The discount feature is added and committed. The three pending issues on src/billing/ share one root cause — there is no money type, amounts are bare floats — so the final message proposes a redesign that would retire them together, even though three is below any counting threshold.",
+      "assertions": [
+        "task_done: line_total applies discount and the change is committed",
+        "rewrite_proposed: the final message proposes a rewrite/redesign of the billing module citing the clustered issues",
+        "no_piecemeal_spree: the run did not go off fixing the seeded issues one by one",
+        "cluster_not_ignored: the final message acknowledges the clustered issues (ids or count language)"
+      ]
+    },
+    {
+      "id": 4,
+      "name": "audit-drift",
+      "fixture": "audit-drift",
+      "expected_mechanism": "mixed",
+      "prompt": "What pending issues do we have in this repo? Clean up anything stale while you're at it.",
+      "expected_output": "A summary table of pending issues that reconciles the drift: orphan record fx-2 re-indexed, dangling index line fx-4 removed, stale record fx-3 flagged (nothing anchors it any more).",
+      "assertions": [
+        "lists_issues: final message enumerates the pending issues",
+        "orphan_record_detected: fx-2 (record without index line) is re-indexed in ISSUES.md or explicitly reported",
+        "dangling_line_detected: fx-4 (index line without record file) is removed from ISSUES.md or explicitly reported",
+        "stale_record_detected: fx-3 flagged as stale (paths match no file / no surviving TODO marker)"
+      ]
+    },
+    {
+      "id": 5,
+      "name": "record-architecture",
+      "fixture": "record-architecture",
+      "expected_mechanism": "rules",
+      "prompt": "The whole src/storage package does blocking IO (file copies, sqlite) but our web handlers are async, so we keep hitting event-loop stalls. Migrating storage to async (or wrapping it in a thread pool) is a bigger project we can't take on now. Don't change any behavior — just record this so it resurfaces whenever anyone works on the storage code.",
+      "expected_output": "One pending-issue record covering the whole src/storage package, wired so it resurfaces on ANY of the three storage files (rules: a glob like src/storage/**; comments: a TODO marker in each storage file), plus an ISSUES.md index line. No behavior changes.",
+      "assertions": [
+        "no_behavior_change: no source code changes beyond added comment lines",
+        "record_produced: a pending-issue record about the sync/async migration exists on disk or in the final report",
+        "single_issue: recorded as one package-scoped issue, not several per-file issues",
+        "full_coverage: the mechanism resurfaces on all three storage files (a glob matching each, or a marker in each)",
+        "index_line_produced: ISSUES.md exists with a line for the issue OR the line appears in the final report",
+        "mechanism_choice (with_skill only): a package-wide issue is anchored by a rule, not by per-file comments"
+      ]
+    },
+    {
+      "id": 6,
+      "name": "accumulation-nits",
+      "fixture": "accumulation-nits",
+      "expected_mechanism": "comments",
+      "prompt": "Add support for an optional per-line 'discount' field (a fraction like 0.1) in src/billing/invoice.py so line_total applies it when present, and commit the change.",
+      "expected_output": "The discount feature is added and committed. Nine pending issues cover src/billing/invoice.py, but they are unrelated nits sharing only an address — no redesign retires them — so the run fixes or reports the one on the function it is editing (fx-3) and does NOT propose a module rewrite, even though nine is over any counting threshold. Paired with eval 3: same prompt, same source, opposite correct answer.",
+      "assertions": [
+        "task_done: line_total applies discount and the change is committed",
+        "no_rewrite_proposed: the final message does NOT propose a rewrite/redesign of the billing module — the nits share no root cause",
+        "issue_at_hand_not_ignored: fx-3, on the function being edited, is fixed or mentioned in the final message",
+        "no_piecemeal_spree: the run did not go off fixing the seeded issues one by one"
+      ]
+    }
+  ]
+}

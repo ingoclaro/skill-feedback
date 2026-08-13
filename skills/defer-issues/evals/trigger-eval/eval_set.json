@@ -1,0 +1,82 @@
+[
+  {
+    "query": "park this for now: the parser in src/ingest/csv_reader.py silently drops rows when the header has a BOM. we're mid-release so don't touch it — I just want it in front of whoever opens that file next",
+    "should_trigger": true
+  },
+  {
+    "query": "ok the merge is done. before you wrap up — that hack we left in src/auth/session.ts where we refresh the token twice, backlog it so it comes back at whoever's next in that file",
+    "should_trigger": true
+  },
+  {
+    "query": "give me the list of stuff we've punted on in this repo, and drop anything that's already been dealt with",
+    "should_trigger": true
+  },
+  {
+    "query": "I keep seeing this TODO [issue-local-3] comment at the top of billing/invoice.py — deal with it properly, whatever the protocol is",
+    "should_trigger": true
+  },
+  {
+    "query": "the email templating is copy-pasted across mailer.py, digest.py and notify.py. not doing it today — add it to the debt list so it comes up when someone edits those files",
+    "should_trigger": true
+  },
+  {
+    "query": "the whole src/storage package does blocking IO but our handlers are async. migrating it is a quarter-long project, not now — don't lose this, it needs to show up whenever anyone works on storage code",
+    "should_trigger": true
+  },
+  {
+    "query": "hey can u jot down somewhere that getUserPrefs has a race when 2 tabs write settings at the same time? not urgent, just dont wanna forget about it",
+    "should_trigger": true
+  },
+  {
+    "query": "a 'Pending:' rule about session refresh races popped up while I was editing api/session.ts — is it worth fixing now or should we push it out? follow the proper process either way",
+    "should_trigger": true
+  },
+  {
+    "query": "before we cut the 2.3 release, go through everything we've put off and clear out whatever's been fixed or no longer applies",
+    "should_trigger": true
+  },
+  {
+    "query": "there are like 5 issue rules piled up on src/billing at this point — figure out what to do with them, consolidate or whatever makes sense",
+    "should_trigger": true
+  },
+  {
+    "query": "create a github issue for the login bug users reported yesterday — 500 error on SSO login, priority high, assign it to me",
+    "should_trigger": false
+  },
+  {
+    "query": "fix issue #142 from our github repo, it's the one about the CSV export timeout",
+    "should_trigger": false
+  },
+  {
+    "query": "add a TODO comment above the parse function reminding us the null check is missing there",
+    "should_trigger": false
+  },
+  {
+    "query": "what does the .claude/rules directory do in claude code? when do those files get loaded?",
+    "should_trigger": false
+  },
+  {
+    "query": "help me track the dashboard feature work: break it into subtasks and check them off as you finish each one",
+    "should_trigger": false
+  },
+  {
+    "query": "commit these changes, split them into logical commits with good messages",
+    "should_trigger": false
+  },
+  {
+    "query": "the retry loop in src/foo.py is copy-pasted in both fetch functions — refactor it into a shared helper now and make sure tests still pass",
+    "should_trigger": false
+  },
+  {
+    "query": "give me a summary of the open github issues in this repo grouped by label",
+    "should_trigger": false
+  },
+  {
+    "query": "clean up the stale feature flags in config/settings.yaml, half of them shipped months ago",
+    "should_trigger": false
+  },
+  {
+    "query": "our eslint no-todo-comments rule is flagging vendored code, help me configure it to ignore the vendor/ directory",
+    "should_trigger": false
+  }
+]

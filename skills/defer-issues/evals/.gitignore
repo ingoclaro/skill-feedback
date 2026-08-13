@@ -1,0 +1,8 @@
+files/
+__pycache__/
+# trigger-eval run output — the query set is the only input worth keeping
+trigger-eval/*.json
+!trigger-eval/eval_set.json
+fixtures/
+fixtures-hybrid/
+iteration-*/
