@@ -10,7 +10,7 @@ metadata:
   rewrite_threshold: 7
 ---
 
-# Pending issues
+# Defer issues
 
 Deferred work dies in conversation logs. This skill anchors each deferred issue to the code it affects so it resurfaces exactly when someone is already there — the moment a fix is cheapest. Two mechanisms, chosen by scope:
 
