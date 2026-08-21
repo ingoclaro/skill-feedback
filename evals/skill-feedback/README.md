@@ -23,7 +23,7 @@ calls; the issue body is written to a local file instead of posted).
   fixture copy (mtimes preserved). `gh` is hard-blocked for every run.
   Writes `transcript.jsonl`, `final_message.txt`, `timing.json`, and an
   `outputs/` dir per run; infra failures produce `error.json` instead.
-  Configs: `with_skill` (the skill at `skills/skill-feedback/`), `old_skill`
+  Configs: `with_skill` (the skill at `skills/skill-feedback/`, found relative to this directory), `old_skill`
   (a pre-edit snapshot at `files/skill-snapshot/SKILL.md` you create with
   `cp -p` before editing), `without_skill` (Skill tool disabled).
   The runner temporarily symlinks the config's skill into
@@ -38,9 +38,9 @@ calls; the issue body is written to a local file instead of posted).
 ## Running
 
 ```bash
-# from the repo root; iteration output is gitignored under evals/files/
-python3 evals/run_evals.py evals/files/iteration-1 --runs 3
-python3 evals/grade_runs.py evals/files/iteration-1
+# from evals/skill-feedback/; iteration output is gitignored under files/
+python3 run_evals.py files/iteration-1 --runs 3
+python3 grade_runs.py files/iteration-1
 ```
 
 Repeat runs (3× per config minimum) before trusting a delta — single runs
@@ -48,6 +48,6 @@ are noisy, and for a close call on a single assertion compare per-assertion
 pass rates across runs, not run-level scores.
 
 To run an eval by hand instead, regenerate fixtures first
-(`python3 evals/generate_sessions.py`) — stale fixtures silently empty the
+(`python3 generate_sessions.py`) — stale fixtures silently empty the
 candidate list — and if you relocate `files/`, preserve file mtimes
 (`cp -p` / `rsync -t`); the skill narrows candidates with `find -mtime -7`.

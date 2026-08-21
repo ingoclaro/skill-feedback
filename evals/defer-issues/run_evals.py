@@ -33,10 +33,11 @@ import sys
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
-HERE = Path(__file__).resolve().parent          # skills/defer-issues/evals/
+HERE = Path(__file__).resolve().parent          # evals/defer-issues/
+REPO = HERE.parent.parent
 DEFAULT_MODEL = "claude-sonnet-5"
 SKILL_LINK = Path.home() / ".claude" / "skills" / "defer-issues"
-SKILL_DEV = HERE.parent                         # the skill itself
+SKILL_DEV = REPO / "skills" / "defer-issues"    # the skill itself
 BUILD = HERE / "files"                          # gitignored
 # config -> (skill dir to install, fixture root)
 CONFIGS = {

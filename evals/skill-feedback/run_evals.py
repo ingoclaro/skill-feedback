@@ -17,7 +17,7 @@ Configs:
 the evals are dry runs and must not contact GitHub even if the model tries.
 The grader still fails a run that *attempts* a gh call (transcript scan).
 
-Output layout (iteration dir normally evals/files/iteration-N — gitignored):
+Output layout (iteration dir normally evals/skill-feedback/files/iteration-N — gitignored):
   <iter>/eval-<id>-<name>/<config>/run-<M>/
       workdir/          the run's cwd (fixture store + any files it wrote)
       transcript.jsonl  full stream-json event log
@@ -34,13 +34,14 @@ import sys
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
-HERE = Path(__file__).resolve().parent          # skills/skill-feedback/evals/
-SKILL_DIR = HERE.parent                         # the skill itself
-FIXTURE_ROOT = SKILL_DIR                        # evals.json "files" are relative to this
+HERE = Path(__file__).resolve().parent          # evals/skill-feedback/
+REPO = HERE.parent.parent
+SKILL_DIR = REPO / "skills" / "skill-feedback"  # the skill itself
+FIXTURE_ROOT = HERE.parent                      # evals.json "files" (evals/files/...) are relative to this
 DEFAULT_MODEL = "claude-sonnet-5"
 SKILL_LINK = Path.home() / ".claude" / "skills" / "skill-feedback"
 # config -> skill dir to install (None = Skill tool disabled).
-# old_skill is a pre-edit snapshot: `cp -p SKILL.md evals/files/skill-snapshot/`
+# old_skill is a pre-edit snapshot: `cp -p skills/skill-feedback/SKILL.md evals/skill-feedback/files/skill-snapshot/`
 CONFIGS = {
     "with_skill": SKILL_DIR,
     "old_skill": HERE / "files" / "skill-snapshot",

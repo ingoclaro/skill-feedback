@@ -15,7 +15,7 @@ session's last activity, because the skill narrows candidates with
 and if you relocate fixtures, preserve mtimes (cp -p / rsync -t).
 
 Standard library only; runs on any Python >= 3.6 (`python3
-evals/generate_sessions.py` from the skill root).
+generate_sessions.py` from evals/skill-feedback/).
 
 Fixture cast (target skill: deploy-helper):
   A  confirmed  structured Skill invocation of deploy-helper, 1 tool failure,

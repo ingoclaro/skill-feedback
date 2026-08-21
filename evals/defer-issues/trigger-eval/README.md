@@ -51,7 +51,7 @@ REPO=/path/to/claude-skills
 
 cd /any/project/with/a/.claude/dir          # see "project root" below
 PYTHONPATH="$SC" python3 -m scripts.run_eval \
-    --eval-set "$REPO/skills/defer-issues/evals/trigger-eval/eval_set.json" \
+    --eval-set "$REPO/evals/defer-issues/trigger-eval/eval_set.json" \
     --skill-path "$REPO/skills/defer-issues" \
     --runs-per-query 3 --num-workers 1 --timeout 180 --verbose
 ```
